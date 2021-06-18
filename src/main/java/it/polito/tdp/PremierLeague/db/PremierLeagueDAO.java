@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import it.polito.tdp.PremierLeague.model.Action;
 import it.polito.tdp.PremierLeague.model.Match;
 import it.polito.tdp.PremierLeague.model.Player;
@@ -36,25 +38,23 @@ public class PremierLeagueDAO {
 		}
 	}
 	
-	public List<Team> listAllTeams(){
+	public void listAllTeams(Map<Integer, Team> idMap){
 		String sql = "SELECT * FROM Teams";
-		List<Team> result = new ArrayList<Team>();
 		Connection conn = DBConnect.getConnection();
 
 		try {
 			PreparedStatement st = conn.prepareStatement(sql);
 			ResultSet res = st.executeQuery();
 			while (res.next()) {
-
+				
 				Team team = new Team(res.getInt("TeamID"), res.getString("Name"));
-				result.add(team);
+				idMap.put(res.getInt("TeamID"), team);
+				
 			}
 			conn.close();
-			return result;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return null;
 		}
 	}
 	
@@ -111,5 +111,39 @@ public class PremierLeagueDAO {
 			return null;
 		}
 	}
+
+	public void calcolaClassifica(Map<Team, Integer> classifica, Map<Integer, Team> idMap) {
+		String sql = "SELECT TeamHomeID AS id1, TeamAwayID as id2, ResultOfTeamHome AS result "
+				+ "FROM matches ";
+		
+		Connection conn = DBConnect.getConnection();
+
+		try {
+			PreparedStatement st = conn.prepareStatement(sql);
+			ResultSet res = st.executeQuery();
+			while (res.next()) {
+
+				int risultato = res.getInt("result");
+				Team t1 = idMap.get(res.getInt("id1"));
+				Team t2 = idMap.get(res.getInt("id2"));
+				
+				if (risultato == 1) {
+					classifica.put(t1, classifica.get(t1)+3); 
+				} else if (risultato == -1) {
+					classifica.put(t2, classifica.get(t2)+3); 
+				} else if (risultato == 0) {
+					classifica.put(t1, classifica.get(t1)+1);
+					classifica.put(t2, classifica.get(t2)+1); 
+				}
+
+			}
+			conn.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 	
 }

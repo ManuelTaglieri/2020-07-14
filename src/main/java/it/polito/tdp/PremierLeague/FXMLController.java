@@ -5,9 +5,11 @@
 package it.polito.tdp.PremierLeague;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.PremierLeague.model.Model;
+import it.polito.tdp.PremierLeague.model.Team;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -35,7 +37,7 @@ public class FXMLController {
     private Button btnSimula; // Value injected by FXMLLoader
 
     @FXML // fx:id="cmbSquadra"
-    private ComboBox<?> cmbSquadra; // Value injected by FXMLLoader
+    private ComboBox<Team> cmbSquadra; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtN"
     private TextField txtN; // Value injected by FXMLLoader
@@ -48,11 +50,41 @@ public class FXMLController {
 
     @FXML
     void doClassifica(ActionEvent event) {
-
+    	
+    	txtResult.clear();
+    	if (this.cmbSquadra.getItems().isEmpty()) {
+    		txtResult.setText("Creare prima il grafo!");
+    		return;
+    	}
+    	if (this.cmbSquadra.getValue()==null) {
+    		txtResult.setText("Selezionare una squadra!");
+    		return;
+    	}
+    	
+    	Map<Team, Integer> classifica = this.model.getClassifica();
+    	txtResult.appendText("Squadre migliori:\n");
+    	for (Team t : this.model.getMigliori(this.cmbSquadra.getValue())) {
+    		txtResult.appendText(t.toString() + "(" +(classifica.get(t)-this.cmbSquadra.getValue().getPunti())+ ")\n");
+    	}
+    	txtResult.appendText("\n");
+    	txtResult.appendText("Squadre peggiori:\n");
+    	for (Team t : this.model.getPeggiori(this.cmbSquadra.getValue())) {
+    		txtResult.appendText(t.toString() + "(" +(classifica.get(t)-this.cmbSquadra.getValue().getPunti())+ ")\n");
+    	}
+    	
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	model.creaGrafo();
+    	txtResult.appendText("Grafo Creato!\n");
+    	txtResult.appendText("# VERTICI: "+model.getVertici()+"\n");
+    	txtResult.appendText("# ARCHI: "+model.getArchi()+"\n");
+    	for (Team t : this.model.getSquadre()) {
+    		this.cmbSquadra.getItems().add(t);
+    	}
 
     }
 
