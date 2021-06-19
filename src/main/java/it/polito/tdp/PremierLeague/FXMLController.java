@@ -90,6 +90,26 @@ public class FXMLController {
 
     @FXML
     void doSimula(ActionEvent event) {
+    	
+    	txtResult.clear();
+    	if (this.cmbSquadra.getItems().isEmpty()) {
+    		txtResult.setText("Creare prima il grafo!");
+    		return;
+    	}
+    	try {
+    		
+    		int n = Integer.parseInt(txtN.getText());
+    		int x = Integer.parseInt(txtX.getText());
+    		
+    		this.model.simula(n, x);
+    		
+    		txtResult.appendText("Simulazione completata!\n");
+    		txtResult.appendText("Reporter medi per partita: "+this.model.getRepMedi()+"\n");
+    		txtResult.appendText("Partite con un numero di reporter critico: "+this.model.getPartiteCritiche()+"\n");
+    		
+    	} catch (NumberFormatException e) {
+    		txtResult.setText("Inserire dei valori interi naturali validi per N e x");
+    	}
 
     }
 

@@ -21,6 +21,7 @@ public class Model {
 	private PremierLeagueDAO dao;
 	private Map<Team, Integer> classifica;
 	private Map<Integer, Team> idMap;
+	private Simulatore sim;
 	
 	public Model() {
 		this.dao = new PremierLeagueDAO();
@@ -114,6 +115,20 @@ public class Model {
 		});
 		
 		return risultato;
+	}
+	
+	public void simula(int n, int x) {
+		this.sim = new Simulatore();
+		this.sim.init(n, x, this.dao.listAllMatches(), this.idMap, this);
+		this.sim.sim();
+	}
+	
+	public double getRepMedi() {
+		return this.sim.getRepMedi();
+	}
+	
+	public int getPartiteCritiche() {
+		return this.sim.getPartiteCritiche();
 	}
 	
 }
